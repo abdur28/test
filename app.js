@@ -113,7 +113,7 @@ async function fetchAllImagesFromS3() {
         imageUrls = []
         objects.Contents.map(obj => {
             const imageUrl = s3.getSignedUrl('getObject', {
-                Bucket: process.env.BUCKET,
+                Bucket: process.env.CYCLIC_BUCKET_NAME,
                 Key: obj.Key,
                 // Add any additional parameters as needed
             });
@@ -391,7 +391,7 @@ app.delete('/delete-image/:album/:imageName', async (req, res) => {
         const { album, imageName } = req.params;
 
         const params = {
-            Bucket: process.env.BUCKET,
+            Bucket: process.env.CYCLIC_BUCKET_NAME,
             Key: `${album}/${imageName}`
         };
 
@@ -421,7 +421,7 @@ app.put('/add-image', upload.single('image'), async (req, res) => {
             .toBuffer();
 
         const params = {
-            Bucket: process.env.BUCKET,
+            Bucket: process.env.CYCLIC_BUCKET_NAME,
             Key: `${album}/${file.originalname}`,
             Body: optimizedImageBuffer, // Use the optimized image buffer
             ContentType: file.mimetype
