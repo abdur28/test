@@ -1,0 +1,42 @@
+<%- include("partials/header") %>
+
+<!-- Content -->
+<div class="container mx-auto">
+  <h1 class="font-signika text-4xl pt-10 pb-8">GALLERY EDIT</h1>
+
+  <% albums.forEach(album => { %>
+    <h1 class="text-3xl pt-10 pb-8"><%= album.name %></h1>
+    <section class="image-gallery-edit nature-section">
+      <% album.images.forEach(function(image){ %>
+      <div class="gallery-edit-item">
+        <div class="image-edit-container">
+          <img alt="" class="thumbnail" src="<%= image.url %>" />
+          <button class="edit-delete-button" data-album-name="<%= album.name %>" data-image-name="<%= image.name %>">x</button>
+        </div>
+      </div>
+      <% }) %>
+      <div class="add-button-container">
+        <input type="file" class="fileInput" accept="image/*" style="display: none;">
+        <button class="add-button uploadButton">
+          <svg class="h-16 w-16 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>   
+        </button>
+        <!-- Hidden input to store the album name -->
+        <input type="text" class="albumName" value="<%= album.name %>">
+      </div>
+    </section>
+  <% }) %>
+  <div class="add-button-container">
+    <input type="file" class="fileInput" accept="image/*" style="display: none;">
+    <button class="add-button uploadButton">
+      <svg class="h-16 w-16 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+      </svg>   
+    </button>
+    <!-- Hidden input to store the album name -->
+    <input type="text" class="albumName" value="">
+  </div>
+  
+<!-- Footer -->
+<%- include("partials/footer") %>
