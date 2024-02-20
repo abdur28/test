@@ -41,7 +41,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
   
-  // Add event listener to all file inputs for file selection
   const fileInputs = document.querySelectorAll('.fileInput');
   fileInputs.forEach(fileInput => {
     fileInput.addEventListener('change', async () => {
@@ -86,46 +85,26 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-// Function to resize the image
+// Function to resize the image using Sharp
 async function resizeImage(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = function(event) {
-      const img = new Image();
-      img.onload = function() {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
+    reader.onload = async function(event) {
+      const inputBuffer = event.target.result;
 
-        // Set the canvas dimensions to the resized dimensions
-        const MAX_WIDTH = 800;
-        const MAX_HEIGHT = 600;
-        let width = img.width;
-        let height = img.height;
-        if (width > height) {
-          if (width > MAX_WIDTH) {
-            height *= MAX_WIDTH / width;
-            width = MAX_WIDTH;
-          }
-        } else {
-          if (height > MAX_HEIGHT) {
-            width *= MAX_HEIGHT / height;
-            height = MAX_HEIGHT;
-          }
-        }
-        canvas.width = width;
-        canvas.height = height;
+      // Resize the image with Sharp
+      const resizedImageBuffer = await sharp(inputBuffer)
+        .jpeg({ quality: 90 })// Adjust dimensions as needed
+        .toBuffer();
 
-        // Draw the image onto the canvas
-        ctx.drawImage(img, 0, 0, width, height);
+      // Convert the resized image buffer back to a Blob
+      const resizedBlob = new Blob([resizedImageBuffer], { type: file.type });
 
-        // Convert the canvas back to a Blob
-        canvas.toBlob(blob => {
-          resolve(new File([blob], file.name, { type: file.type }));
-        }, file.type);
-      };
-      img.src = event.target.result;
+      // Create a File object from the resized Blob
+      const resizedFile = new File([resizedBlob], file.name, { type: file.type });
+
+      resolve(resizedFile);
     };
-    reader.readAsDataURL(file);
+    reader.readAsArrayBuffer(file);
   });
 }
-
