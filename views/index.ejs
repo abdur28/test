@@ -35,8 +35,8 @@
             <div class="flex flex-wrap justify-start">
               <% for(let i=0; i<16; i++) { %>  
                 <div class="portfolio-image flex-grow p-2">
-                  <a href="<%= myImages[i] %>" data-fancybox="portfolio">
-                    <img alt="Portfolio Images" class="border-radius block h-full w-full object-cover object-center opacity-0 animate-fade-in transition duration-500 transform scale-100 hover:scale-110" src="<%= myImages[i] %>" />
+                  <a href="<%= images[i].imageUrl %>" data-fancybox="portfolio">
+                    <img alt="Portfolio Images" class="border-radius block h-full w-full object-cover object-center opacity-0 animate-fade-in transition duration-500 transform scale-100 hover:scale-110" src="<%= images[i].imageUrl %>" />
                   </a>
                 </div>
                 
