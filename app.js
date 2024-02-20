@@ -109,15 +109,19 @@ async function fetchAllImagesFromS3() {
         };
 
         const objects = await s3.listObjectsV2(params).promise();
-        console.log(objects)
-        imageUrls = []
-        objects.Contents.map(obj => {
+        console.log(objects);
+        
+        const imageUrls = []; // Declare an array to store image URLs
+
+        // Iterate over the objects and push signed URLs into imageUrls array
+        objects.Contents.forEach(obj => {
+            const [albumName, imageName] = obj.Key.split('/'); // Split key by '/' to get albumName and imageName
             const imageUrl = s3.getSignedUrl('getObject', {
-                Bucket: process.env.CYCLIC_BUCKET_NAME,
+                Bucket: process.env.BUCKET,
                 Key: obj.Key,
                 // Add any additional parameters as needed
             });
-            imageUrls.push(imageUrl);
+            imageUrls.push({ albumName, imageName, imageUrl }); // Push albumName, imageName, and imageUrl as an object
         });
 
         return imageUrls;
@@ -316,16 +320,16 @@ app.get('/gallery', async (req, res) => {
         const allImages = await fetchAllImagesFromS3();
 
         // Group images by album
-        const albums = [];
-        const albumMap = new Map(); // Using a map to ensure albums are unique
+        const albumsMap = new Map(); // Using a map to ensure albums are unique
         allImages.forEach(image => {
-            const [albumName, imageName] = image.key.split('/');
-            if (!albumMap.has(albumName)) {
-                albumMap.set(albumName, []);
-                albums.push({ name: albumName, images: albumMap.get(albumName) });
+            const { albumName, imageName } = image;
+            if (!albumsMap.has(albumName)) {
+                albumsMap.set(albumName, []);
             }
-            albumMap.get(albumName).push({ name: imageName, url: image.url });
+            albumsMap.get(albumName).push({ name: imageName, url: image.imageUrl });
         });
+
+        const albums = Array.from(albumsMap, ([name, images]) => ({ name, images }));
 
         res.render('gallery', { albums });
     } catch (error) {
@@ -333,7 +337,6 @@ app.get('/gallery', async (req, res) => {
         res.status(500).send('Error fetching album images');
     }
 });
-
 
 app.get('/iamtheowner01-admin', function (req, res) {
     res.render('admin', { adminInfo: res.locals.adminInfo });
