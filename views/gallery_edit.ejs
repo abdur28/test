@@ -8,12 +8,12 @@
       <div class="flex flex-wrap">
         <div class="w-1/2 p-4">
           <h1 class="text-1xl pt-10 pb-8">About Me Picture</h1>
-          <img src="<%= aboutMeAlbum[aboutMeAblum.length - 1].imageUrl %>" alt="Image 1" class="image">
+          <img src="<%= aboutMeAlbum[aboutMeAlbum.length - 1].imageUrl %>" alt="Image 1" class="image">
           <div class="p-5">
             <input type="file" class="fileInput" accept="image/*" style="display: none;">
             <button class="uploadButton py-3 px-5 text-sm font-medium text-center bg-black dark:bg-white text-white dark:text-black rounded-lg bg-primary-700 sm:w-fit hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
             >Change Picture</button>
-            <input type="hidden" class="albumHash" value="<%= aboutMeAlbum.name %>">
+            <input type="hidden" class="albumHash" value="<%= aboutMeAlbum[0].name %>">
           </div>
         </div>
         <!-- Second image and button pair -->
@@ -24,7 +24,7 @@
             <input type="file" class="fileInput" accept="image/*" style="display: none;">
             <button class="uploadButton py-3 px-5 text-sm font-medium text-center bg-black dark:bg-white text-white dark:text-black rounded-lg bg-primary-700 sm:w-fit hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
             >Change Picture</button>
-            <input type="hidden" class="albumHash" value="<%= contactAblum.name%>">
+            <input type="hidden" class="albumHash" value="<%= contactAblum[0].name%>">
           </div>
         </div>
         <!-- Add more image and button pairs as needed -->
