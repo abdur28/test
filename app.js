@@ -318,6 +318,7 @@ app.get('/about-me', async (req, res) => {
 app.get('/gallery', async (req, res) => {
     try {
         const allImages = await fetchAllImagesFromS3();
+        const shuffledImages = shuffleArray(allImages);
 
         // Group images by album
         const albumsMap = new Map(); // Using a map to ensure albums are unique
@@ -326,12 +327,12 @@ app.get('/gallery', async (req, res) => {
             if (!albumsMap.has(albumName)) {
                 albumsMap.set(albumName, []);
             }
-            albumsMap.get(albumName).push({ name: imageName, link: image.imageUrl });
+            albumsMap.get(albumName).push({ name: imageName, url: image.imageUrl });
         });
 
         const albums = Array.from(albumsMap, ([name, images]) => ({ name, images }));
 
-        res.render('gallery', { albums });
+        res.render('gallery', { albums, images: shuffledImages });
     } catch (error) {
         console.error('Error fetching album images:', error);
         res.status(500).send('Error fetching album images');
