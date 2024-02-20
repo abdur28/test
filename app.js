@@ -301,7 +301,7 @@ app.post('/iamtheowner01-admin', async (req, res) => {
 
 app.get('/iamtheowner01-admin-gallery-edit', async (req, res) => {
     try {
-        const allImages = await fetchAndCacheImagesFromS3();
+        const allImages = await fetchAllImagesFromS3();
 
       // Group images by album
         const albums = [];
@@ -315,12 +315,12 @@ app.get('/iamtheowner01-admin-gallery-edit', async (req, res) => {
                 albumsMap.get(albumName).push({ name: imageName, url: image.imageUrl });
             }
         });
-        const contactAlbum = allImages.filter(image => image.albumName === 'contact');
-        const aboutMeAlbum = allImages.filter(image => image.albumName === 'about_me');
+        // const contactAlbum = allImages.filter(image => image.albumName === 'contact');
+        // const aboutMeAlbum = allImages.filter(image => image.albumName === 'about_me');
         
 
         
-        res.render('gallery_edit', { albums, contactAlbum, aboutMeAlbum, adminInfo: res.locals.adminInfo });
+        res.render('gallery_edit', { albums, adminInfo: res.locals.adminInfo });
     } catch (error) {
         console.error('Error fetching album images:', error);
         res.status(500).send('Error fetching album images');
