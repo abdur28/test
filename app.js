@@ -326,7 +326,7 @@ app.get('/gallery', async (req, res) => {
             if (!albumsMap.has(albumName)) {
                 albumsMap.set(albumName, []);
             }
-            albumsMap.get(albumName).push({ name: imageName, url: image.imageUrl });
+            albumsMap.get(albumName).push({ name: imageName, link: image.imageUrl });
         });
 
         const albums = Array.from(albumsMap, ([name, images]) => ({ name, images }));
@@ -370,19 +370,21 @@ app.get('/iamtheowner01-admin-gallery-edit', async (req, res) => {
     try {
         const allImages = await fetchAllImagesFromS3();
 
-      // // Group images by album
-      //   const albums = [];
-      //   const albumMap = new Map(); // Using a map to ensure albums are unique
-      //   allImages.forEach(image => {
-      //       const [albumName, imageName] = image.key.split('/');
-      //       if (!albumMap.has(albumName)) {
-      //           albumMap.set(albumName, []);
-      //           albums.push({ name: albumName, images: albumMap.get(albumName) });
-      //       }
-      //       albumMap.get(albumName).push({ name: imageName, url: image.url });
-      //   });
+        const allImages = await fetchAllImagesFromS3();
+
+        // Group images by album
+        const albumsMap = new Map(); // Using a map to ensure albums are unique
+        allImages.forEach(image => {
+            const { albumName, imageName } = image;
+            if (!albumsMap.has(albumName)) {
+                albumsMap.set(albumName, []);
+            }
+            albumsMap.get(albumName).push({ name: imageName, link: image.imageUrl });
+        });
+
+        const albums = Array.from(albumsMap, ([name, images]) => ({ name, images }));
         
-        res.render('gallery_edit', { allImages, adminInfo: res.locals.adminInfo });
+        res.render('gallery_edit', { albums, adminInfo: res.locals.adminInfo });
     } catch (error) {
         console.error('Error fetching album images:', error);
         res.status(500).send('Error fetching album images');
