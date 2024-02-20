@@ -266,7 +266,7 @@ app.get('/', async (req, res) => {
 
         // Shuffling all images
         const shuffledImages = shuffleArray(allImages);
-        console.log(shuffledImages)
+        console.log(allImages)
 
         res.render('index', { myImages: shuffledImages, adminInfo: res.locals.adminInfo });
     } catch (error) {
