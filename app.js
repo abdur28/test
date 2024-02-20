@@ -370,8 +370,6 @@ app.get('/iamtheowner01-admin-gallery-edit', async (req, res) => {
     try {
         const allImages = await fetchAllImagesFromS3();
 
-        const allImages = await fetchAllImagesFromS3();
-
         // Group images by album
         const albumsMap = new Map(); // Using a map to ensure albums are unique
         allImages.forEach(image => {
