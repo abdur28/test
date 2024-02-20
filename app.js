@@ -210,10 +210,10 @@ function shuffleArray(array) {
 app.get('/', async (req, res) => {
     try {
         const allImages = await fetchAllImagesFromS3();
-
-        // Shuffling all images
-        const shuffledImages = shuffleArray(allImages);
-        console.log(shuffledImages)
+        // Filter out contact and about me images
+        const filteredImages = allImages.filter(image => image.albumName !== 'contact' && image.albumName !== 'about_me');
+        // Shuffling filtered images
+        const shuffledImages = shuffleArray(filteredImages);
 
         res.render('index', { images: shuffledImages, adminInfo: res.locals.adminInfo });
     } catch (error) {
@@ -221,7 +221,6 @@ app.get('/', async (req, res) => {
         res.status(500).send('Error fetching images');
     }
 });
-
 app.get('/contact', async (req, res) => {
     try {
         const allImages = await fetchAllImagesFromS3();
@@ -247,7 +246,8 @@ app.get('/about-me', async (req, res) => {
 app.get('/gallery', async (req, res) => {
     try {
         const allImages = await fetchAllImagesFromS3();
-        const shuffledImages = shuffleArray(allImages);
+        const filteredImages = allImages.filter(image => image.albumName !== 'contact' && image.albumName !== 'about_me');
+        const shuffledImages = shuffleArray(filteredImages);
 
         // Group images by album
         const albumsMap = new Map(); // Using a map to ensure albums are unique
