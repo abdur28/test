@@ -39,8 +39,8 @@
       <% album.images.forEach(function(image){ %>
       <div class="gallery-edit-item">
         <div class="image-edit-container">
-          <img alt="" class="thumbnail" src="<%= image.link %>" />
-          <button class="edit-delete-button" data-album-name="<%= album.name %>" data-image-name="<%= image.name %>">x</button>
+          <img alt="" class="thumbnail" src="<%= image.url %>" />
+          <button class="edit-delete-button" data-album-name="<%= album.name %>" data-image-name="<%= image.url %>">x</button>
         </div>
       </div>
       <% }) %>
