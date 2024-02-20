@@ -113,8 +113,8 @@ function resizeImage(file) {
         const ctx = canvas.getContext('2d');
 
         // Set canvas dimensions
-        const maxWidth = 800;
-        const maxHeight = 600;
+        const maxWidth = 1600;
+        const maxHeight = 1200;
         let width = img.width;
         let height = img.height;
 
