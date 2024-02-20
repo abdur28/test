@@ -101,7 +101,6 @@ async function fetchAndCacheImagesFromS3() {
     }
 }
 
-// Fetch all images from S3 bucket
 async function fetchAllImagesFromS3() {
     try {
         const params = {
@@ -113,15 +112,31 @@ async function fetchAllImagesFromS3() {
         
         const imageUrls = []; // Declare an array to store image URLs
 
-        // Iterate over the objects and push signed URLs into imageUrls array
+        // Iterate over the objects
         objects.Contents.forEach(obj => {
-            const [albumName, imageName] = obj.Key.split('/'); // Split key by '/' to get albumName and imageName
+            const key = obj.Key;
+            
+            // Check if the key ends with a picture type (e.g., .jpg, .png)
+            const pictureTypes = ['.jpg', '.jpeg', '.png', '.gif']; // Add more if needed
+            const endsWithPictureType = pictureTypes.some(type => key.toLowerCase().endsWith(type));
+            
+            // If it doesn't end with a picture type, skip this object
+            if (!endsWithPictureType) {
+                return;
+            }
+            
+            // Split key by '/' to get albumName and imageName
+            const [albumName, imageName] = key.split('/');
+            
+            // Generate a signed URL for the image
             const imageUrl = s3.getSignedUrl('getObject', {
                 Bucket: process.env.BUCKET,
-                Key: obj.Key,
+                Key: key,
                 // Add any additional parameters as needed
             });
-            imageUrls.push({ albumName, imageName, imageUrl }); // Push albumName, imageName, and imageUrl as an object
+            
+            // Push albumName, imageName, and imageUrl as an object
+            imageUrls.push({ albumName, imageName, imageUrl });
         });
 
         return imageUrls;
@@ -130,6 +145,7 @@ async function fetchAllImagesFromS3() {
         return [];
     }
 }
+
 
 // Retrieve a value from the Redis cache
 async function getFromCache(key) {
