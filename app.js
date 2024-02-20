@@ -323,7 +323,7 @@ app.get('/iamtheowner01-admin-gallery-edit', async (req, res) => {
         
 
         
-        res.render('gallery_edit', contactAlbum, aboutMeAlbum { albums, adminInfo: res.locals.adminInfo });
+        res.render('gallery_edit', { albums, contactAlbum, aboutMeAlbum, adminInfo: res.locals.adminInfo });
     } catch (error) {
         console.error('Error fetching album images:', error);
         res.status(500).send('Error fetching album images');
