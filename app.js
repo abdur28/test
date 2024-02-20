@@ -365,7 +365,7 @@ app.post('/iamtheowner01-admin', async (req, res) => {
 
 app.get('/iamtheowner01-admin-gallery-edit', async (req, res) => {
     try {
-        const allImages = await fetchAndCacheImagesFromS3();
+        const allImages = await fetchAllImagesFromS3();
 
       // Group images by album
         const albums = [];
