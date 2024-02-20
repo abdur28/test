@@ -3,7 +3,35 @@
 <!-- Content -->
 <div class="container mx-auto">
   <h1 class="font-signika text-4xl pt-10 pb-8">GALLERY EDIT</h1>
-  
+  <section>
+    <div class="container">
+      <div class="flex flex-wrap">
+        <div class="w-1/2 p-4">
+          <h1 class="text-1xl pt-10 pb-8">About Me Picture</h1>
+          <img src="<%= aboutMeAlbum.images[0].imageUrl %>" alt="Image 1" class="image">
+          <div class="p-5">
+            <input type="file" class="fileInput" accept="image/*" style="display: none;">
+            <button class="uploadButton py-3 px-5 text-sm font-medium text-center bg-black dark:bg-white text-white dark:text-black rounded-lg bg-primary-700 sm:w-fit hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+            >Change Picture</button>
+            <input type="hidden" class="albumHash" value="<%= aboutMeAlbum.name %>">
+          </div>
+        </div>
+        <!-- Second image and button pair -->
+        <div class="w-1/2 p-4">
+          <h1 class="text-1xl pt-10 pb-8">Contact Picture</h1>
+          <img src="<%= contactAlbum.images[0].imageUrl %>" alt="Image 2" class="image">
+          <div class="p-5">
+            <input type="file" class="fileInput" accept="image/*" style="display: none;">
+            <button class="uploadButton py-3 px-5 text-sm font-medium text-center bg-black dark:bg-white text-white dark:text-black rounded-lg bg-primary-700 sm:w-fit hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+            >Change Picture</button>
+            <input type="hidden" class="albumHash" value="<%= contactAblum.name%>">
+          </div>
+        </div>
+        <!-- Add more image and button pairs as needed -->
+      </div>
+    </div>
+  </section>
+
   <% albums.forEach(album => { %>
     <h1 class="text-3xl pt-10 pb-8"><%= album.name %></h1>
     <section class="image-gallery-edit nature-section">
@@ -23,12 +51,10 @@
           </svg>   
         </button>
         <!-- Hidden input to store the album name -->
-        <input type="text" class="albumName" value="<%= album.name %>">
+        <input type="hidden" class="albumName" value="<%= album.name %>">
       </div>
     </section>
   <% }) %>
-
-
   <div class="add-button-container">
     <input type="file" class="fileInput" accept="image/*" style="display: none;">
     <button class="add-button uploadButton">
