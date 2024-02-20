@@ -9,7 +9,7 @@
       <button class="btn active mr-4" data-filter="all">All</button>
       <!-- You can dynamically generate buttons based on your albums here -->
       <% albums.forEach(album => { %>
-        <button class="btn mr-4" data-filter="<%= album.name %>"><%= album.name %></button>
+        <button class="tite-case btn mr-4" data-filter="<%= album.name %>"><%= album.name %></button>
       <% }) %>
     </div>
   </div>
@@ -18,7 +18,7 @@
   <div id="gallery-container">
     <% albums.forEach(album => { %>  
       <section id='<%= album.name %>' class="gallery-section hidden text-neutral-700">
-        <h1 class="font-signika text-3xl pt-10 pb-8"><%= album.name %></h1>
+        <h1 class="title-case font-signika text-3xl pt-10 pb-8"><%= album.name %></h1>
         <div class="container w-full">
           <div class="flex flex-wrap justify-start">
             <% album.images.forEach(image => { %>  
