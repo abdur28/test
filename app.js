@@ -225,7 +225,7 @@ app.get('/', async (req, res) => {
 app.get('/contact', async (req, res) => {
     try {
         const allImages = await fetchAllImagesFromS3();
-        const contactAlbum = allImages.filter(image => image.albumName === 'contact');
+        const contactAlbum = allImages.filter(image => image.albumName === 'contact')[0];
         res.render('contact', { contactAlbum, adminInfo: res.locals.adminInfo });
     } catch (error) {
         console.error('Error fetching album images:', error);
@@ -237,6 +237,7 @@ app.get('/about-me', async (req, res) => {
     try {
         const allImages = await fetchAllImagesFromS3();
         const aboutMeAlbum = allImages.filter(image => image.albumName === 'about_me');
+        console.log(aboutMeAlbum)
         res.render('about_me', { aboutMeAlbum, adminInfo: res.locals.adminInfo });
     } catch (error) {
         console.error('Error fetching album images:', error);
