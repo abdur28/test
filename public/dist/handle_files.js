@@ -57,11 +57,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const albumName = albumNameInput.value;
 
         // Resize the image before uploading
-        const resizedFile = await resizeImage(file);
+        const file =  await resizeOrUseOriginalImage(file);;
 
         // Create a FormData object to hold the resized image and album name
         const formData = new FormData();
-        formData.append('image', resizedFile);
+        formData.append('image', file);
         formData.append('album', albumName);
 
         // Send a POST request to the server to upload the resized image
@@ -84,6 +84,25 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 });
+
+function resizeOrUseOriginalImage(file) {
+  return new Promise((resolve, reject) => {
+    // Check if file size exceeds 5.8MB (in bytes)
+    const maxSize = 5.8 * 1024 * 1024; // 5.8MB in bytes
+    if (file.size > maxSize) {
+      // If file size exceeds 5.8MB, resize the image
+      resizeImage(file).then(resizedFile => {
+        resolve(resizedFile);
+      }).catch(error => {
+        reject(error);
+      });
+    } else {
+      // If file size is within the limit, use the original image
+      resolve(file);
+    }
+  });
+}
+
 
 function resizeImage(file) {
   return new Promise((resolve, reject) => {
@@ -134,3 +153,4 @@ function resizeImage(file) {
     reader.readAsDataURL(file);
   });
 }
+
