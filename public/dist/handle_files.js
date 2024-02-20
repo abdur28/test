@@ -1,5 +1,3 @@
-const sharp = require('sharp');
-
 document.querySelectorAll('.edit-delete-button').forEach(button => {
   button.addEventListener('click', async () => {
       const albumName = button.dataset.albumName;
@@ -87,26 +85,52 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-// Function to resize the image using Sharp
-async function resizeImage(file) {
+function resizeImage(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = async function(event) {
-      const inputBuffer = event.target.result;
+    reader.onload = function(event) {
+      const img = new Image();
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
 
-      // Resize the image with Sharp
-      const resizedImageBuffer = await sharp(inputBuffer)
-        .jpeg({ quality: 90 })// Adjust dimensions as needed
-        .toBuffer();
+        // Set canvas dimensions
+        const maxWidth = 800;
+        const maxHeight = 600;
+        let width = img.width;
+        let height = img.height;
 
-      // Convert the resized image buffer back to a Blob
-      const resizedBlob = new Blob([resizedImageBuffer], { type: file.type });
+        // Calculate new dimensions while preserving aspect ratio
+        if (width > height) {
+          if (width > maxWidth) {
+            height *= maxWidth / width;
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width *= maxHeight / height;
+            height = maxHeight;
+          }
+        }
 
-      // Create a File object from the resized Blob
-      const resizedFile = new File([resizedBlob], file.name, { type: file.type });
+        // Set canvas dimensions
+        canvas.width = width;
+        canvas.height = height;
 
-      resolve(resizedFile);
+        // Draw the image onto the canvas with highest quality settings
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Convert canvas content back to a Blob
+        canvas.toBlob(blob => {
+          // Create a new File object from the Blob
+          const resizedFile = new File([blob], file.name, { type: file.type, lastModified: Date.now() });
+
+          // Resolve the promise with the resized File object
+          resolve(resizedFile);
+        }, file.type, 1); // Use quality parameter (1 = best quality)
+      };
+      img.src = event.target.result;
     };
-    reader.readAsArrayBuffer(file);
+    reader.readAsDataURL(file);
   });
 }
