@@ -8,9 +8,10 @@ function shuffleArray(array) {
 function toTitleCase() {
     document.querySelectorAll('.title-case').forEach(titleElement => {
       var word = titleElement.innerHTML.charAt(0).toUpperCase() + titleElement.innerHTML.slice(1).toLowerCase();
-      titleELement.innerHTML = word;
+      titleElement.innerHTML = word; 
     })
 }
+
 
 toTitleCase()                                                     
 
