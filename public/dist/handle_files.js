@@ -1,3 +1,5 @@
+const sharp = require('sharp');
+
 document.querySelectorAll('.edit-delete-button').forEach(button => {
   button.addEventListener('click', async () => {
       const albumName = button.dataset.albumName;
