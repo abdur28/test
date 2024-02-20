@@ -38,46 +38,6 @@ const accountId = process.env.ACCOUNT_ID
 const accountUsername = process.env.ACCOUNT_USERNAME
 const mongoDBURL = process.env.MONGODB_URI
 
-let accessToken = null;
-let tokenLastFetchedTime = null;
-const TOKEN_EXPIRY_DURATION_MS = 28 * 24 * 60 * 60 * 1000; // 28 days in milliseconds
-
-async function fetchAccessToken(clientId, clientSecret) {
-    try {
-        const response = await axios.post('https://api.imgur.com/oauth2/token', {
-            refresh_token: refreshToken,
-            client_id: clientId,
-            client_secret: clientSecret,
-            grant_type: 'refresh_token'
-        });
-        
-        if (response.data && response.data.access_token) {
-            accessToken = response.data.access_token;
-            tokenLastFetchedTime = Date.now();
-            console.log('Access token fetched successfully.');
-        } else {
-            console.error('Failed to fetch access token from Imgur API.');
-        }
-    } catch (error) {
-        console.error('Error fetching access token:', error);
-    }
-}
-
-async function ensureToken(req, res, next) {
-    try {
-        if (!accessToken || !tokenLastFetchedTime || (Date.now() - tokenLastFetchedTime) > TOKEN_EXPIRY_DURATION_MS) {
-            console.log('Access token expired or not available. Fetching new token...');
-            await fetchAccessToken(clientID, clientSecret);
-        }
-        console.log('Token checked, proceeding...');
-        next();
-    } catch (error) {
-        console.error('Error in ensureToken middleware:', error);
-        res.redirect('/');
-    }
-}
-
-
 
 // Fetch all images from S3 bucket and cache the result
 async function fetchAndCacheImagesFromS3() {
@@ -101,6 +61,7 @@ async function fetchAndCacheImagesFromS3() {
     }
 }
 
+// Fetch all images from S3 bucket
 async function fetchAllImagesFromS3() {
     try {
         const params = {
@@ -198,40 +159,6 @@ async function clearCache() {
     });
 }
 
-
-
-
-
-
-const albumHashes = [{
-    name: 'photoshoots',
-    hash: 'jwn4DPl'
-}, {
-    name: 'graduation',
-    hash: 'LXNraCR'
-}, {
-    name: 'pregnancy',
-    hash: 'hzyo7Fn'
-}, {
-    name: 'family',
-    hash: '7AbOjou'
-}, {
-    name: 'creative',
-    hash: 'GrnEXll'
-}, {
-    name: 'children',
-    hash: 'PFDlB2A'
-}, {
-    name: 'event',
-    hash: 'ShX8W9o'
-}, {
-    name: 'wedding',
-    hash: 'RZVXrPP'
-}];
-
-const contachHash = 'DhgDWQS';
-const aboutMeHash = 'cpEEnIy';
-
 mongoose.set("strictQuery", false);
 const connectDB = async () => {
   try {
@@ -286,9 +213,9 @@ app.get('/', async (req, res) => {
 
         // Shuffling all images
         const shuffledImages = shuffleArray(allImages);
-        console.log(allImages)
+        console.log(shuffledImages)
 
-        res.render('index', { myImages: shuffledImages, adminInfo: res.locals.adminInfo });
+        res.render('index', { images: shuffledImages, adminInfo: res.locals.adminInfo });
     } catch (error) {
         console.error('Error fetching images:', error);
         res.status(500).send('Error fetching images');
@@ -297,16 +224,9 @@ app.get('/', async (req, res) => {
 
 app.get('/contact', async (req, res) => {
     try {
-        const response = await axios.get(`https://api.imgur.com/3/account/abdur28/album/${contachHash}`, {
-            headers: {
-                'Authorization': `Client-ID ${clientID}`
-            }
-        });
-
-        const data = response.data.data.images;
-        const imageUrls = data.map(image => image.link);
-
-        res.render('contact', { images: imageUrls, adminInfo: res.locals.adminInfo });
+        const allImages = await fetchAllImagesFromS3();
+        const contactAlbum = allImages.filter(image => image.albumName === 'contact');
+        res.render('contact', { contactAlbum, adminInfo: res.locals.adminInfo });
     } catch (error) {
         console.error('Error fetching album images:', error);
         res.status(500).send('Error fetching album images');
@@ -315,16 +235,9 @@ app.get('/contact', async (req, res) => {
 
 app.get('/about-me', async (req, res) => {
     try {
-        const response = await axios.get(`https://api.imgur.com/3/account/abdur28/album/${aboutMeHash}`, {
-            headers: {
-                'Authorization': `Client-ID ${clientID}`
-            }
-        });
-
-        const data = response.data.data.images;
-        const imageUrls = data.map(image => image.link);
-
-        res.render('about_me', { images: imageUrls, adminInfo: res.locals.adminInfo });
+        const allImages = await fetchAllImagesFromS3();
+        const aboutMeAlbum = allImages.filter(image => image.albumName === 'about_me');
+        res.render('about_me', { aboutMeAlbum, adminInfo: res.locals.adminInfo });
     } catch (error) {
         console.error('Error fetching album images:', error);
         res.status(500).send('Error fetching album images');
@@ -340,10 +253,12 @@ app.get('/gallery', async (req, res) => {
         const albumsMap = new Map(); // Using a map to ensure albums are unique
         allImages.forEach(image => {
             const { albumName, imageName } = image;
-            if (!albumsMap.has(albumName)) {
-                albumsMap.set(albumName, []);
+            if (albumName !== 'contact' && albumName !== 'about_me') { // Exclude the "contact" album
+                if (!albumsMap.has(albumName)) {
+                    albumsMap.set(albumName, []);
+                }
+                albumsMap.get(albumName).push({ name: imageName, url: image.imageUrl });
             }
-            albumsMap.get(albumName).push({ name: imageName, url: image.imageUrl });
         });
 
         const albums = Array.from(albumsMap, ([name, images]) => ({ name, images }));
@@ -354,6 +269,7 @@ app.get('/gallery', async (req, res) => {
         res.status(500).send('Error fetching album images');
     }
 });
+
 
 app.get('/iamtheowner01-admin', function (req, res) {
     res.render('admin', { adminInfo: res.locals.adminInfo });
@@ -385,21 +301,26 @@ app.post('/iamtheowner01-admin', async (req, res) => {
 
 app.get('/iamtheowner01-admin-gallery-edit', async (req, res) => {
     try {
-        const allImages = await fetchAllImagesFromS3();
+        const allImages = await fetchAndCacheImagesFromS3();
 
-        // Group images by album
-        const albumsMap = new Map(); // Using a map to ensure albums are unique
+      // Group images by album
+        const albums = [];
+        const albumMap = new Map(); // Using a map to ensure albums are unique
         allImages.forEach(image => {
-            const { albumName, imageName } = image;
-            if (!albumsMap.has(albumName)) {
-                albumsMap.set(albumName, []);
+            const [albumName, imageName] = image.key.split('/');
+            if (albumName !== 'contact' && albumName !== 'about_me') { // Exclude the "contact" album
+                if (!albumsMap.has(albumName)) {
+                    albumsMap.set(albumName, []);
+                }
+                albumsMap.get(albumName).push({ name: imageName, url: image.imageUrl });
             }
-            albumsMap.get(albumName).push({ name: imageName, link: image.imageUrl });
         });
-
-        const albums = Array.from(albumsMap, ([name, images]) => ({ name, images }));
+        const contactAlbum = allImages.filter(image => image.albumName === 'contact');
+        const aboutMeAlbum = allImages.filter(image => image.albumName === 'about_me');
         
-        res.render('gallery_edit', { albums, adminInfo: res.locals.adminInfo });
+
+        
+        res.render('gallery_edit', { albums, contactAlbum, aboutMeAlbum, adminInfo: res.locals.adminInfo });
     } catch (error) {
         console.error('Error fetching album images:', error);
         res.status(500).send('Error fetching album images');
@@ -411,7 +332,7 @@ app.delete('/delete-image/:album/:imageName', async (req, res) => {
         const { album, imageName } = req.params;
 
         const params = {
-            Bucket: process.env.CYCLIC_BUCKET_NAME,
+            Bucket: process.env.BUCKET,
             Key: `${album}/${imageName}`
         };
 
@@ -435,14 +356,24 @@ app.put('/add-image', upload.single('image'), async (req, res) => {
             return res.status(400).json({ error: 'No image file provided' });
         }
 
+        // Rename the file based on the album name
+        let fileName;
+        if (album === 'contact') {
+            fileName = 'contact_pic.jpg';
+        } else if (album === 'about_me') {
+            fileName = 'about_me_pic.jpg';
+        } else {
+            fileName = file.originalname; // Use original file name if not contact or about_me
+        }
+
         // Resize and optimize image with quality 90 using Sharp
         const optimizedImageBuffer = await sharp(file.buffer)
             .jpeg({ quality: 90 })
             .toBuffer();
 
         const params = {
-            Bucket: process.env.CYCLIC_BUCKET_NAME,
-            Key: `${album}/${file.originalname}`,
+            Bucket: process.env.BUCKET,
+            Key: `${album}/${fileName}`, // Use the adjusted file name
             Body: optimizedImageBuffer, // Use the optimized image buffer
             ContentType: file.mimetype
         };
@@ -456,6 +387,7 @@ app.put('/add-image', upload.single('image'), async (req, res) => {
         res.status(500).json({ error: 'Error uploading image to S3' });
     }
 });
+
 
 
 const PORT = process.env.PORT || 3000;
