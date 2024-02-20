@@ -22,6 +22,25 @@ document.querySelectorAll('.edit-delete-button').forEach(button => {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Add event listener to all upload buttons
+  const uploadButtons = document.querySelectorAll('.uploadButton');
+  uploadButtons.forEach(uploadButton => {
+    uploadButton.addEventListener('click', () => {
+      // Find the corresponding file input and album name input
+      const fileInput = uploadButton.parentElement.querySelector('.fileInput');
+      const albumNameInput = uploadButton.parentElement.querySelector('.albumName');
+
+      // Check if albumNameInput exists
+      if (!albumNameInput) {
+        console.error('Album name input not found');
+        return;
+      }
+
+      // Trigger click event on the file input
+      fileInput.click();
+    });
+  });
+  
   // Add event listener to all file inputs for file selection
   const fileInputs = document.querySelectorAll('.fileInput');
   fileInputs.forEach(fileInput => {
