@@ -36,7 +36,7 @@ function portfolioSize(){
     }
   });
 }
-
+ramdomizeSize()
 portfolioSize()
 
 function fadeIn(){
@@ -52,7 +52,7 @@ function fadeIn(){
           photo.classList.remove("opacity-0");
           photo.classList.add("opacity-100");
       }, delay);
-      delay += 200; // Increment delay for each photo
+      delay += 400; // Increment delay for each photo
   });
 }
 fadeIn()
@@ -70,18 +70,18 @@ document.querySelectorAll('.portfolio-menu button.btn').forEach(button => {
       
       // Filter albums based on the data-filter attribute
       const filter = this.getAttribute('data-filter');
-      if (filter) {
-        document.querySelectorAll('.gallery-section').forEach(section => {
-          const albumName = section.getAttribute('id'); // Get the id of the section
+      document.querySelectorAll('.gallery-section').forEach(section => {
+        const albumName = section.getAttribute('id'); // Get the id of the section
           
             if (albumName !== filter) {
               section.classList.add('hidden'); // Show sections that match the filter
             } else {
               section.classList.remove('hidden'); // Hide sections that don't match the filter
+              ramdomizeSize()
               fadeIn()
             }    
-        });
-      } 
+      });
+       
     });
 });
 
