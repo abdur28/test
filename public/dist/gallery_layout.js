@@ -5,6 +5,13 @@ function shuffleArray(array) {
   }
   return array;
 }
+function toTitleCase() {
+    document.querySelectorAll('.title-case').forEach(titleElement => {
+    var word = titleElement.innerHTML.charAt(0).toUpperCase() + titleElement.innerHTML.slice(1).toLowerCase();
+    titelELement.innerHTML = word;  
+}
+
+toTitleCase()                                                     
 
 function ramdomizeSize(){
   document.querySelectorAll('.my-image').forEach(image => {
@@ -76,7 +83,8 @@ document.querySelectorAll('.portfolio-menu button.btn').forEach(button => {
             if (albumName !== filter) {
               section.classList.add('hidden'); // Show sections that match the filter
             } else {
-              section.classList.remove('hidden'); // Hide sections that don't match the filter
+              section.classList.remove('hidden');
+              toTitleCase()   // Hide sections that don't match the filter
               ramdomizeSize()
               fadeIn()
             }    
