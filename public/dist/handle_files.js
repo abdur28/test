@@ -57,11 +57,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const albumName = albumNameInput.value;
 
         // Resize the image before uploading
-        const file =  await resizeOrUseOriginalImage(file);;
+        const resizedOrOriginalFile =  await resizeOrUseOriginalImage(file);
 
         // Create a FormData object to hold the resized image and album name
         const formData = new FormData();
-        formData.append('image', file);
+        formData.append('image', resizedOrOriginalFile);
         formData.append('album', albumName);
 
         // Send a POST request to the server to upload the resized image
@@ -103,7 +103,6 @@ function resizeOrUseOriginalImage(file) {
   });
 }
 
-
 function resizeImage(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -141,6 +140,10 @@ function resizeImage(file) {
 
         // Convert canvas content back to a Blob
         canvas.toBlob(blob => {
+          if (!blob) {
+            reject(new Error('Could not resize the image.'));
+            return;
+          }
           // Create a new File object from the Blob
           const resizedFile = new File([blob], file.name, { type: file.type, lastModified: Date.now() });
 
@@ -153,4 +156,3 @@ function resizeImage(file) {
     reader.readAsDataURL(file);
   });
 }
-
