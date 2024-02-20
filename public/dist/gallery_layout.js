@@ -37,56 +37,25 @@ function portfolioSize(){
   });
 }
 
-portfolioSize();
+portfolioSize()
 
-function allImages(){
-  const allImagesInput = document.querySelector('#allImages'); // Assuming you have given the hidden input field an ID of "allImages"
-  const allImagesString = allImagesInput.value;
-  const allImages = JSON.parse(allImagesString); // Parse the JSON string back into a JavaScript array
-  const shuffledImages = shuffleArray(allImages);
-  const galleryContainer = document.getElementById('gallery-container');
+function fadeIn(){
+  const body = document.querySelector("body");
+  body.classList.remove("opacity-0");
+  body.classList.add("opacity-100");
   
-  // Remove existing sections
-  document.querySelectorAll('.gallery-section').forEach(element => {
-    element.classList.add('hidden');
+  // Gradually fade in each photo with a delay
+  const photos = document.querySelectorAll('img');
+  let delay = 0;
+  photos.forEach((photo) => {
+      setTimeout(() => {
+          photo.classList.remove("opacity-0");
+          photo.classList.add("opacity-100");
+      }, delay);
+      delay += 200; // Increment delay for each photo
   });
-
-  // Create and append new sections with shuffled images
-  const section = document.createElement('section');
-  section.classList.add('gallery-section', 'text-neutral-700');
-  section.id = 'all'; // Set the id of the container section
-  galleryContainer.appendChild(section); // Append the container section to the gallery container
-  const allTitle = document.createElement('h1');
-  allTitle.classList.add('text-3xl', 'pt-10', 'pb-8')
-  allTitle.innerHTML = 'All';
-  const wholeContainer = document.createElement('div');
-  wholeContainer.classList.add('container', 'w-full');
-  const secondContainer = document.createElement('div');
-  secondContainer.classList.add('flex', 'flex-wrap', 'justify-start');
-  wholeContainer.appendChild(secondContainer);
-  section.appendChild(allTitle);
-  section.appendChild(wholeContainer);
-
-  shuffledImages.forEach(image => {
-
-    const imageContainer = document.createElement('div');
-    imageContainer.classList.add('my-image', 'flex-grow', 'p-2');
-    const anchor = document.createElement('a');
-    anchor.href = image;
-    anchor.dataset.fancybox = 'all'; 
-    const img = document.createElement('img');
-    img.alt = 'image';
-    img.classList.add('border-radius', 'block', 'h-full', 'w-full', 'object-cover', 'object-center', 'opacity-100', 'animate-fade-in', 'transition', 'duration-500', 'transform', 'scale-100', 'hover:scale-110');
-    img.src = image;
-    anchor.appendChild(img);
-    imageContainer.appendChild(anchor);
-    secondContainer.appendChild(imageContainer);
-    
-  });
-  ramdomizeSize();
 }
-
-allImages();
+fadeIn()
   
   // Add click event listeners to the buttons
 document.querySelectorAll('.portfolio-menu button.btn').forEach(button => {
@@ -101,9 +70,7 @@ document.querySelectorAll('.portfolio-menu button.btn').forEach(button => {
       
       // Filter albums based on the data-filter attribute
       const filter = this.getAttribute('data-filter');
-      if (filter === "*") {
-        allImages();
-      } else {
+      if (filter) {
         document.querySelectorAll('.gallery-section').forEach(section => {
           const albumName = section.getAttribute('id'); // Get the id of the section
           
@@ -111,9 +78,10 @@ document.querySelectorAll('.portfolio-menu button.btn').forEach(button => {
               section.classList.add('hidden'); // Show sections that match the filter
             } else {
               section.classList.remove('hidden'); // Hide sections that don't match the filter
+              fadeIn()
             }    
         });
-      }  
+      } 
     });
 });
 
