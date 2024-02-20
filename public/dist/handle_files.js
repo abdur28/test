@@ -22,25 +22,6 @@ document.querySelectorAll('.edit-delete-button').forEach(button => {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Add event listener to all upload buttons
-  const uploadButtons = document.querySelectorAll('.uploadButton');
-  uploadButtons.forEach(uploadButton => {
-    uploadButton.addEventListener('click', () => {
-      // Find the corresponding file input and album name input
-      const fileInput = uploadButton.parentElement.querySelector('.fileInput');
-      const albumNameInput = uploadButton.parentElement.querySelector('.albumName');
-
-      // Check if albumNameInput exists
-      if (!albumNameInput) {
-        console.error('Album name input not found');
-        return;
-      }
-
-      // Trigger click event on the file input
-      fileInput.click();
-    });
-  });
-
   // Add event listener to all file inputs for file selection
   const fileInputs = document.querySelectorAll('.fileInput');
   fileInputs.forEach(fileInput => {
@@ -57,12 +38,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         const albumName = albumNameInput.value;
 
-        // Create a FormData object to hold the file and album name
+        // Resize the image before uploading
+        const resizedFile = await resizeImage(file);
+
+        // Create a FormData object to hold the resized image and album name
         const formData = new FormData();
-        formData.append('image', file);
+        formData.append('image', resizedFile);
         formData.append('album', albumName);
 
-        // Send a POST request to the server to upload the image
+        // Send a POST request to the server to upload the resized image
         const response = await fetch('/add-image', {
           method: 'PUT',
           body: formData,
@@ -82,3 +66,47 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 });
+
+// Function to resize the image
+async function resizeImage(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const img = new Image();
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set the canvas dimensions to the resized dimensions
+        const MAX_WIDTH = 800;
+        const MAX_HEIGHT = 600;
+        let width = img.width;
+        let height = img.height;
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+
+        // Draw the image onto the canvas
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Convert the canvas back to a Blob
+        canvas.toBlob(blob => {
+          resolve(new File([blob], file.name, { type: file.type }));
+        }, file.type);
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
