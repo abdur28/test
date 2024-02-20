@@ -367,19 +367,19 @@ app.get('/iamtheowner01-admin-gallery-edit', async (req, res) => {
     try {
         const allImages = await fetchAllImagesFromS3();
 
-      // Group images by album
-        const albums = [];
-        const albumMap = new Map(); // Using a map to ensure albums are unique
-        allImages.forEach(image => {
-            const [albumName, imageName] = image.key.split('/');
-            if (!albumMap.has(albumName)) {
-                albumMap.set(albumName, []);
-                albums.push({ name: albumName, images: albumMap.get(albumName) });
-            }
-            albumMap.get(albumName).push({ name: imageName, url: image.url });
-        });
+      // // Group images by album
+      //   const albums = [];
+      //   const albumMap = new Map(); // Using a map to ensure albums are unique
+      //   allImages.forEach(image => {
+      //       const [albumName, imageName] = image.key.split('/');
+      //       if (!albumMap.has(albumName)) {
+      //           albumMap.set(albumName, []);
+      //           albums.push({ name: albumName, images: albumMap.get(albumName) });
+      //       }
+      //       albumMap.get(albumName).push({ name: imageName, url: image.url });
+      //   });
         
-        res.render('gallery_edit', { admins, adminInfo: res.locals.adminInfo });
+        res.render('gallery_edit', { allImages, adminInfo: res.locals.adminInfo });
     } catch (error) {
         console.error('Error fetching album images:', error);
         res.status(500).send('Error fetching album images');
