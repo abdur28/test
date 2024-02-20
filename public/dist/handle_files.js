@@ -2,6 +2,7 @@ document.querySelectorAll('.edit-delete-button').forEach(button => {
   button.addEventListener('click', async () => {
       const albumName = button.dataset.albumName;
       const imageName = button.dataset.imageName;
+      console.log(albumName, imageName)
 
       try {
           const response = await fetch(`/delete-image/${albumName}/${imageName}`, {
