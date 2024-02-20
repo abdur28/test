@@ -304,8 +304,7 @@ app.get('/iamtheowner01-admin-gallery-edit', async (req, res) => {
         const allImages = await fetchAllImagesFromS3();
 
       // Group images by album
-        const albums = [];
-        const albumMap = new Map(); // Using a map to ensure albums are unique
+        const albumsMap = new Map(); // Using a map to ensure albums are unique
         allImages.forEach(image => {
             const { albumName, imageName } = image;
             if (albumName !== 'contact' && albumName !== 'about_me') { // Exclude the "contact" album
@@ -315,6 +314,9 @@ app.get('/iamtheowner01-admin-gallery-edit', async (req, res) => {
                 albumsMap.get(albumName).push({ name: imageName, url: image.imageUrl });
             }
         });
+
+        const albums = Array.from(albumsMap, ([name, images]) => ({ name, images }));
+
 
         // const contactAlbum = allImages.filter(image => image.albumName === 'contact');
         // const aboutMeAlbum = allImages.filter(image => image.albumName === 'about_me');
