@@ -71,6 +71,47 @@
   <script src="dist/menu.js"></script>
   <script src="dist/handle_files.js"></script>
   <script src="dist/gallery_layout.js"></script>
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
+  <script>
+    var slider = new Swiper('.tranding-slider', {
+    effect: 'coverflow',
+    grabCursor: true,
+    centeredSlides: true,
+    loop: true,
+    slidesPerView: 2,
+    spaceBetween: 0,
+    lazyPreloadPrevNext: 0,
+    breakpoints: {
+    // when window width is >= 640px
+      640: {
+        slidesPerView: 3,
+        spaceBetween: 0,
+        lazyPreloadPrevNext: 1,
+      }
+    },
+    coverflowEffect: {
+      rotate: 0,
+      stretch: 0,
+      depth: 100,
+      modifier: 2.5,
+    },
+    keyboard: {
+      enabled: true,
+      onlyInViewport: false,
+    },
+    pagination: {
+      el: '.swiper-pagination',
+      clickable: true,
+    },
+    navigation: {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev',
+    }
+  });
+  
+</script>
   
 </body>
 
