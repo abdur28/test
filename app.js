@@ -212,7 +212,7 @@ function shuffleArray(array) {
 
 app.get('/', async (req, res) => {
     try {
-        const allImages = await fetchAllImagesFromS3());
+        const allImages = await fetchAllImagesFromS3();
         // Filter out contact and about me images
         const filteredImages = allImages.filter(image => image.albumName !== 'contact' && image.albumName !== 'about_me');
         // Shuffling filtered images
