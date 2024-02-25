@@ -38,7 +38,6 @@ const accountId = process.env.ACCOUNT_ID
 const accountUsername = process.env.ACCOUNT_USERNAME
 const mongoDBURL = process.env.MONGODB_URI
 
-
 // Fetch all images from S3 bucket and cache the result
 async function fetchAndCacheImagesFromS3() {
     try {
@@ -206,6 +205,8 @@ function shuffleArray(array) {
     }
     return array;
   }
+
+fetchAndCacheImagesFromS3();
 
 app.get('/', async (req, res) => {
     try {
@@ -397,25 +398,10 @@ app.put('/add-image', upload.single('image'), async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 
-// Function to start the Express server
-async function startServer() {
-    try {
-        // Connect to MongoDB
-        await connectDB();
-        
-        // Fetch images from S3 bucket
-        const allImages = await fetchAndCacheImagesFromS3();
-        // Cache the fetched images or process them as needed
+connectDB().then(() => {
+    app.listen(PORT, () => {
+        console.log("listening for requests");
+    });
+});
 
-        // Start the Express server
-        app.listen(PORT, () => {
-            console.log("Server is running on port", PORT);
-        });
-    } catch (error) {
-        console.error('Error starting server:', error);
-    }
-}
-
-// Call the function to start the server
-startServer();
 
