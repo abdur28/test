@@ -25,11 +25,6 @@ const redisClient = Redis.createClient({
     password: process.env.REDIS_PASSWORD // If authentication is enabled
 });
 
-
-redisClient.on('error', (error) => {
-    console.error('Redis error:', error);
-});
-
 const s3 = new AWS.S3();
 
 app.set("view engine", "ejs");
