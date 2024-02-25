@@ -209,7 +209,7 @@ function shuffleArray(array) {
 
 app.get('/', async (req, res) => {
     try {
-        const allImages = await fetchAllImagesFromS3();
+        const allImages = await fetchAndCacheImagesFromS3();
         // Filter out contact and about me images
         const filteredImages = allImages.filter(image => image.albumName !== 'contact' && image.albumName !== 'about_me');
         // Shuffling filtered images
@@ -223,7 +223,7 @@ app.get('/', async (req, res) => {
 });
 app.get('/contact', async (req, res) => {
     try {
-        const allImages = await fetchAllImagesFromS3();
+        const allImages = await fetchAndCacheImagesFromS3();
         const contactAlbum = allImages.filter(image => image.albumName === 'contact');
         res.render('contact', { contactAlbum, adminInfo: res.locals.adminInfo });
     } catch (error) {
@@ -234,7 +234,7 @@ app.get('/contact', async (req, res) => {
 
 app.get('/about-me', async (req, res) => {
     try {
-        const allImages = await fetchAllImagesFromS3();
+        const allImages = await fetchAndCacheImagesFromS3();
         const aboutMeAlbum = allImages.filter(image => image.albumName === 'about_me');
         res.render('about_me', { aboutMeAlbum, adminInfo: res.locals.adminInfo });
     } catch (error) {
@@ -245,7 +245,7 @@ app.get('/about-me', async (req, res) => {
 
 app.get('/gallery', async (req, res) => {
     try {
-        const allImages = await fetchAllImagesFromS3();
+        const allImages = await fetchAndCacheImagesFromS3();
         const filteredImages = allImages.filter(image => image.albumName !== 'contact' && image.albumName !== 'about_me');
         const shuffledImages = shuffleArray(filteredImages);
 
@@ -301,7 +301,7 @@ app.post('/iamtheowner01-admin', async (req, res) => {
 
 app.get('/iamtheowner01-admin-gallery-edit', async (req, res) => {
     try {
-        const allImages = await fetchAllImagesFromS3();
+        const allImages = await fetchAndCacheImagesFromS3();
 
       // Group images by album
         const albumsMap = new Map(); // Using a map to ensure albums are unique
@@ -340,6 +340,7 @@ app.delete('/delete-image/:album/:imageName', async (req, res) => {
         };
 
         await s3.deleteObject(params).promise();
+        clearCache();
 
         console.log("Deleted from S3:", params.Key);
         res.sendStatus(200);
@@ -382,6 +383,7 @@ app.put('/add-image', upload.single('image'), async (req, res) => {
         };
 
         const uploadResult = await s3.upload(params).promise();
+        clearCache();
 
         console.log("Uploaded to S3:", uploadResult.Location);
         res.status(200).json({ imageUrl: uploadResult.Location });
@@ -395,9 +397,25 @@ app.put('/add-image', upload.single('image'), async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 
-connectDB().then(() => {
-    app.listen(PORT, () => {
-        console.log("listening for requests");
-    });
-});
+// Function to start the Express server
+async function startServer() {
+    try {
+        // Connect to MongoDB
+        await connectDB();
+        
+        // Fetch images from S3 bucket
+        const allImages = await fetchAndCacheImagesFromS3();
+        // Cache the fetched images or process them as needed
+
+        // Start the Express server
+        app.listen(PORT, () => {
+            console.log("Server is running on port", PORT);
+        });
+    } catch (error) {
+        console.error('Error starting server:', error);
+    }
+}
+
+// Call the function to start the server
+startServer();
 
