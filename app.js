@@ -20,12 +20,11 @@ const upload = multer({ storage: storage });
 
 // Set up Redis client
 const redisClient = Redis.createClient({
-    password: process.env.REDIS_PASSWORD,
-    socket: {
-        host: process.env.REDIS_HOST,
-        port: process.env.REDIS_PORT
-    }
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
+    password: process.env.REDIS_PASSWORD // If authentication is enabled
 });
+
 
 redisClient.on('error', (error) => {
     console.error('Redis error:', error);
