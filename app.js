@@ -210,8 +210,6 @@ function shuffleArray(array) {
     return array;
   }
 
-fetchAndCacheImagesFromS3();
-
 app.get('/', async (req, res) => {
     try {
         const allImages = await fetchAndCacheImagesFromS3();
