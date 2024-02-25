@@ -27,6 +27,36 @@
   <script src="https://code.jquery.com/jquery-3.6.3.min.js"
     integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
   <!-- End - Fancybox Scripts -->
+
+  <!-- Swiper CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+
+  <!-- Swiper JS -->
+  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+  <script>
+    // Define the imageLoaded function
+    function imageLoaded(img) {
+      // Find the loader container
+      var loaderContainer = img.parentNode.querySelector('.loader-container');
+      // Hide the loader by adding the 'hidden' class
+      loaderContainer.classList.add('hidden');
+      // Show the image by removing the 'hidden' class
+      img.classList.remove('hidden');
+    }
+    // Add event listener to window.onload event to ensure all resources are loaded before executing the script
+    window.onload = function() {
+      // Find all images with class 'image-loading'
+      var images = document.querySelectorAll('.image-loading');
+      // Loop through each image
+      images.forEach(function(img) {
+          // Add onload event listener to call imageLoaded function when image is loaded
+          img.onload = function() {
+              imageLoaded(img);
+          };
+      });
+    };
+  </script>
+
   <script src="https://cdn.tailwindcss.com"></script>
   
   <script>
