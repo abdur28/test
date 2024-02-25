@@ -19,7 +19,15 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 // Set up Redis client
-const redisClient = Redis.createClient({});
+const redisClient = Redis.createClient({
+    password: process.env.REDIS_PASSWORD,
+    socket: process.env.REDIS_SOCKET,
+    host: process.env.REDIS_HOST
+});
+
+redisClient.on('error', (error) => {
+    console.error('Redis error:', error);
+});
 
 const s3 = new AWS.S3();
 
