@@ -43,3 +43,49 @@ window.addEventListener('scroll', handleScroll);
 
 // Initial check on page load
 handleScroll();
+
+// Check if user prefers dark mode and add a class accordingly
+function checkDarkMode() {
+  if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    document.querySelector('.whatsapp').setAttribute('fill', 'white');
+  } else {
+    document.querySelector('.whatsapp').setAttribute('fill', 'black');
+  }
+}
+
+// Initial check
+checkDarkMode();
+
+// Listen for changes in preferred color scheme
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', checkDarkMode);
+
+document.addEventListener("DOMContentLoaded", function() {
+  const addReviewButton = document.querySelector(".review-button");
+  const modalOverlay = document.getElementById("modal-overlay");
+  const closeModalButton = document.getElementById("close-modal");
+
+  addReviewButton.addEventListener("click", function() {
+    modalOverlay.style.display = "block";
+    document.body.style.overflow = "hidden"; // disable scrolling on the body
+  });
+
+  closeModalButton.addEventListener("click", function() {
+    modalOverlay.style.display = "none";
+    document.body.style.overflow = ""; // enable scrolling on the body
+  });
+});
+
+// Get the input field and character count span
+const reviewInput = document.getElementById('review');
+const charCountSpanReview = document.getElementById('char-count-review');
+
+// Add an input event listener to the input field
+reviewInput.addEventListener('input', function() {
+    // Get the current value of the input field
+    const currentLength = reviewInput.value.length;
+
+    // Update the character count span
+    charCountSpanReview.textContent = currentLength + '/100';
+});
+
+
