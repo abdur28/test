@@ -182,6 +182,7 @@ const informationSchema = new mongoose.Schema({
     twitter: String,
     telegram: String,
     facebook: String,
+    aboutPhoto: String,
     aboutMeInfo: String,
     bio: String,
 });
