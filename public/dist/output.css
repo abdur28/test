@@ -1826,3 +1826,86 @@ video {
     background-position: 0% 0%, 50% 0%, 100% 0%
   }
 }
+
+#modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8); /* semi-transparent black background */
+  z-index: 9999; /* ensure the modal appears above other content */
+  display: none; /* hide by default */
+}
+
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+}
+
+#review-form {
+  object-fit: contain;
+  height: 80%;
+  width: 25%;
+}
+
+@media (max-width: 768px) {
+  #review-form {
+    height: 50%;
+    width: 80%;
+  }  
+}
+
+.review-input{
+  border-radius: 10px;
+  background-color: #535353;
+}
+
+#close-modal {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.close {
+  appearance: none;
+  background-color: transparent;
+  border: 0.125em solid #8a8a8a;
+  border-radius: 10px;
+  color: #7e7e7e;
+  cursor: pointer;
+  display: inline-block;
+  font-family: Roobert,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  margin: 0;
+  outline: none;
+  padding: 0.3em 0.7em;
+  text-align: center;
+  text-decoration: none;
+  transition: all 300ms cubic-bezier(.23, 1, 0.32, 1);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  will-change: transform;
+ }
+ 
+ .close:disabled {
+  pointer-events: none;
+ }
+ 
+ .close:hover {
+  color: #fff;
+  background-color: #1A1A1A;
+  box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
+  transform: translateY(-2px);
+ }
+ 
+ .close:active {
+  box-shadow: none;
+  transform: translateY(0);
+ }
