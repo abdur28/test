@@ -23,6 +23,34 @@ document.querySelectorAll('.edit-delete-button').forEach(button => {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
+  // Add event listener to all delete buttons
+  const deleteButtons = document.querySelectorAll('.delete-review');
+  deleteButtons.forEach(deleteButton => {
+    deleteButton.addEventListener('click', async () => {
+      const reviewId = deleteButton.dataset.reviewId;
+
+      try {
+        const response = await fetch(`/delete-review/${reviewId}`, {
+          method: 'DELETE'
+        });
+        if (response.ok) {
+          // Review deleted successfully
+          alert('Review deleted successfully');
+          window.location.reload(true);
+        } else {
+          // Failed to delete review
+          alert('Failed to delete review. Please try again later.');
+        }
+      } catch (error) {
+        console.error('Error deleting review:', error);
+      }
+    });
+  });
+});
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
     // Add event listener to all upload buttons
   const uploadButtons = document.querySelectorAll('.uploadButton');
   uploadButtons.forEach(uploadButton => {
