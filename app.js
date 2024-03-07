@@ -72,7 +72,7 @@ async function fetchAllImagesFromS3() {
         };
 
         const objects = await s3.listObjectsV2(params).promise();
-        console.log(objects);
+        // console.log(objects);
         
         const imageUrls = []; // Declare an array to store image URLs
 
