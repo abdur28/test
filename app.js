@@ -186,12 +186,21 @@ const informationSchema = new mongoose.Schema({
     bio: String,
 });
 
+const reviewSchema = new mongoose.Schema({
+    name: String,
+    review: String,
+});
+
 const Information = mongoose.model('Information', informationSchema);
+const Review = mongoose.model('Review', reviewSchema);
+
 
 
 const fetchAdminInfo = async (req, res, next) => {
     try {
         const adminInfo = await Information.findOne();
+        const reviews = await Review.find();
+        res.locals.reviews = reviews;
         res.locals.adminInfo = adminInfo;
         next();
     } catch (error) {
@@ -218,12 +227,49 @@ app.get('/', async (req, res) => {
         // Shuffling filtered images
         const shuffledImages = shuffleArray(filteredImages);
 
-        res.render('index', { images: shuffledImages, adminInfo: res.locals.adminInfo });
+        res.render('index', { images: shuffledImages, adminInfo: res.locals.adminInfo, reviews: res.locals.reviews });
     } catch (error) {
         console.error('Error fetching images:', error);
         res.status(500).send('Error fetching images');
     }
 });
+
+app.post('/', async (req, res) => {
+    try {
+        const { name, review } = req.body;
+        const reviewCard = new Review({
+            name: name,
+            review: review
+        });
+
+        await reviewCard.save();
+
+        res.redirect('/');
+    } catch (error) {
+        console.error('Error saving review:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.delete('/delete-review/:id', async (req, res) => {
+    try {
+        const reviewId = req.params.id;
+
+        // Find the review by ID and delete it
+        const deletedReview = await Review.findByIdAndDelete(reviewId);
+        if (!deletedReview) {
+            return res.status(404).json({ message: 'Review not found' });
+        }
+
+        // Respond with a success message
+        res.status(200).json({ message: 'Review deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting review:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
+
 app.get('/contact', async (req, res) => {
     try {
         const allImages = await fetchAllImagesFromS3();
@@ -280,7 +326,7 @@ app.get('/iamtheowner01-admin', function (req, res) {
 
 app.post('/iamtheowner01-admin', async (req, res) => {
     try {
-        const { address, number, email, instagram, twitter, telegram, facebook, aboutMeInfo, bio } = req.body;
+        const { address, number, email, instagram, twitter, telegram, facebook, aboutMeInfo, aboutPhoto, bio } = req.body;
         const { adminInfo } = res.locals;
 
         adminInfo.address = address.trim() || adminInfo.address;
@@ -290,6 +336,7 @@ app.post('/iamtheowner01-admin', async (req, res) => {
         adminInfo.twitter = twitter.trim() || adminInfo.twitter;
         adminInfo.telegram = telegram.trim() || adminInfo.telegram;
         adminInfo.facebook = facebook.trim() || adminInfo.facebook;
+        adminInfo.aboutPhoto = aboutPhoto.trim() || adminInfo.aboutPhoto;
         adminInfo.aboutMeInfo = aboutMeInfo.trim() || adminInfo.aboutMeInfo;
         adminInfo.bio = bio.trim() || adminInfo.bio;
 
