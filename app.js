@@ -11,8 +11,15 @@ const Redis = require('redis');
 const compression = require('compression');
 require('dotenv').config();
 const AWS = require('aws-sdk');
+const nodemailer = require('nodemailer');
 
-
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.USER_EMAIL,
+      pass: process.env.USER_KEY
+    }
+});
 
 const app = express();
 const storage = multer.memoryStorage();
@@ -282,6 +289,30 @@ app.get('/contact', async (req, res) => {
     }
 });
 
+app.post('/contact', (req, res) => {
+    const { email, name, message, myEmail } = req.body;
+
+    // Prepare the email message
+    const mailOptions = {
+        from: 'Jerry J photography <abdurrahmanidris235@gmail.com>',
+        to: myEmail,
+        subject: `New Message from Website`,
+        html: `<html><p>You got a new message from ${name}</p><p>Email: ${email}</p><p>Message: ${message}</p></html>`
+    };
+
+    // Send the email
+    transporter.sendMail(mailOptions, function(error, info) {
+        if (error) {
+            console.error('Error sending email:', error);
+            res.status(500).json({ error: 'Error sending email' });
+        } else {
+            console.log('Email sent successfully');
+            res.status(200).json({ message: 'Email sent successfully' });
+        }
+    });
+});
+
+
 app.get('/about-me', async (req, res) => {
     try {
         const allImages = await fetchAllImagesFromS3();
@@ -292,6 +323,30 @@ app.get('/about-me', async (req, res) => {
         res.status(500).send('Error fetching album images');
     }
 });
+
+app.post('/contact', (req, res) => {
+    const { email, name, message, myEmail } = req.body;
+
+    // Prepare the email message
+    const mailOptions = {
+        from: 'Jerry J photography <abdurrahmanidris235@gmail.com>',
+        to: 'abdurrahmanidris28@gmail.com',
+        subject: `New Message from Website`,
+        html: `<html><p>You got a new message from ${name}</p><p>Email: ${email}</p><p>Message: ${message}</p></html>`
+    };
+
+    // Send the email
+    transporter.sendMail(mailOptions, function(error, info) {
+        if (error) {
+            console.error('Error sending email:', error);
+            res.status(500).json({ error: 'Error sending email' });
+        } else {
+            console.log('Email sent successfully');
+            res.status(200).json({ message: 'Email sent successfully' });
+        }
+    });
+});
+
 
 app.get('/gallery', async (req, res) => {
     try {
