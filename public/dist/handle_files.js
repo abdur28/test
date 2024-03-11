@@ -185,3 +185,61 @@ function resizeImage(file) {
     reader.readAsDataURL(file);
   });
 }
+
+// sendEmail.js
+
+// Function to send an email
+async function sendEmail(event) {
+  event.preventDefault(); // Prevent the default form submission behavior
+
+  // Get form data
+  const formData = new FormData(event.target);
+
+  // Get the submit button
+  const submitButton = event.target.querySelector('button[type="submit"]');
+
+  try {
+    // Change button text to "Sending"
+    submitButton.textContent = 'Sending...';
+
+    // Disable the button while sending
+    submitButton.disabled = true;
+
+    // Fetch endpoint to send email
+    const response = await fetch('/contact', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(Object.fromEntries(formData))
+    });
+
+    // Parse response
+    const responseData = await response.json();
+
+    // Check if response is successful
+    if (response.ok) {
+      // Display success message
+      alert('Thank you for your message. A response will be provided shortly.');
+      window.location.reload();
+    } else {
+      // Display error message
+      alert('Failed to send. Try again later');
+      window.location.reload();
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    // Display error message
+    alert('Error: Failed to send email');
+  } finally {
+    // Reset button text to "Send message"
+    submitButton.textContent = 'Send message';
+
+    // Re-enable the button
+    submitButton.disabled = false;
+  }
+}
+
+// Add event listener to the form
+document.getElementById('contactForm').addEventListener('submit', sendEmail);
+
