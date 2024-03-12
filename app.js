@@ -295,7 +295,7 @@ app.post('/contact', (req, res) => {
     // Prepare the email message
     const mailOptions = {
         from: 'Jerry J photography <abdurrahmanidris235@gmail.com>',
-        to: 'abdurrahmanidris28@gmail.com',
+        to: myEmail,
         subject: `New Message from Website`,
         html: `<html><p>You got a new message from ${name}</p><p>Email: ${email}</p><p>Message: ${message}</p></html>`
     };
