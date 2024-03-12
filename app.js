@@ -295,41 +295,6 @@ app.post('/contact', (req, res) => {
     // Prepare the email message
     const mailOptions = {
         from: 'Jerry J photography <abdurrahmanidris235@gmail.com>',
-        to: myEmail,
-        subject: `New Message from Website`,
-        html: `<html><p>You got a new message from ${name}</p><p>Email: ${email}</p><p>Message: ${message}</p></html>`
-    };
-
-    // Send the email
-    transporter.sendMail(mailOptions, function(error, info) {
-        if (error) {
-            console.error('Error sending email:', error);
-            res.status(500).json({ error: 'Error sending email' });
-        } else {
-            console.log('Email sent successfully');
-            res.status(200).json({ message: 'Email sent successfully' });
-        }
-    });
-});
-
-
-app.get('/about-me', async (req, res) => {
-    try {
-        const allImages = await fetchAllImagesFromS3();
-        const aboutMeAlbum = allImages.filter(image => image.albumName === 'about_me');
-        res.render('about_me', { aboutMeAlbum, adminInfo: res.locals.adminInfo });
-    } catch (error) {
-        console.error('Error fetching album images:', error);
-        res.status(500).send('Error fetching album images');
-    }
-});
-
-app.post('/contact', (req, res) => {
-    const { email, name, message, myEmail } = req.body;
-
-    // Prepare the email message
-    const mailOptions = {
-        from: 'Jerry J photography <abdurrahmanidris235@gmail.com>',
         to: 'abdurrahmanidris28@gmail.com',
         subject: `New Message from Website`,
         html: `<html><p>You got a new message from ${name}</p><p>Email: ${email}</p><p>Message: ${message}</p></html>`
@@ -347,6 +312,16 @@ app.post('/contact', (req, res) => {
     });
 });
 
+app.get('/about-me', async (req, res) => {
+    try {
+        const allImages = await fetchAllImagesFromS3();
+        const aboutMeAlbum = allImages.filter(image => image.albumName === 'about_me');
+        res.render('about_me', { aboutMeAlbum, adminInfo: res.locals.adminInfo });
+    } catch (error) {
+        console.error('Error fetching album images:', error);
+        res.status(500).send('Error fetching album images');
+    }
+});
 
 app.get('/gallery', async (req, res) => {
     try {
